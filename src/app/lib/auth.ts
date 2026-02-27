@@ -40,6 +40,14 @@ export const auth = betterAuth({
             },
         }
     },
+    session: {
+        expiresIn: 24 * 60 * 60, // 1 day in seconds, must be in seconds in better-auth config, but when setting cookie maxAge we need to convert it to milliseconds by multiplying with 1000
+        updateAge: 24 * 60 * 60,
+        cookieCache: {
+            enabled: true,
+            maxAge: 24 * 60 * 60,
+        }
+    },
     // trustedOrigins: [
     //     process.env.BETTER_AUTH_URL || "http://localhost:5000",
     // ],
