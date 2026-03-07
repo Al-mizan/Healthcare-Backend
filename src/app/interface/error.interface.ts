@@ -11,3 +11,4 @@ export interface TErrorResponse {
     error?: unknown;
     stack?: string;
 }
+
