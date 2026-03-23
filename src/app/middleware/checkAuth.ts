@@ -53,6 +53,13 @@ export const checkAuth = (...authRoles: Role[]) => async (req: Request, res: Res
             if (authRoles.length > 0 && !authRoles.includes(user.role as Role)) {
                 throw new AppError(status.FORBIDDEN, "Unauthorized: You don't have permission to access this resource");
             }
+
+            req.user = {
+                userId: user.id,
+                email: user.email,
+                role: user.role as Role,
+            }
+
         }
 
         // access token verification
@@ -67,6 +74,8 @@ export const checkAuth = (...authRoles: Role[]) => async (req: Request, res: Res
         if (authRoles.length > 0 && !authRoles.includes(verifiedToken.data!.role as Role)) {
             throw new AppError(status.FORBIDDEN, "Unauthorized: You don't have permission to access this resource");
         }
+
+
         next();
     } catch (error: any) {
         next(error);
