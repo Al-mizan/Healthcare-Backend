@@ -22,7 +22,7 @@ const setAccessTokenCookie = (res: Response, token: string) => {
         secure: true, //envVars.NODE_ENV === "production",
         sameSite: "none",
         path: "/",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,    // 1 day
     });
 }
 
@@ -32,13 +32,13 @@ const setRefreshTokenCookie = (res: Response, token: string) => {
         secure: true, //envVars.NODE_ENV === "production",
         sameSite: "none",
         path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,    // 7 days
     });
 }
 
 const setBetterAuthSessionCookie = (res: Response, token: string) => {
     cookieUtils.setCookie(res, "better-auth.session_token", token, {
-        httpOnly: true, 
+        httpOnly: true,
         secure: true, //envVars.NODE_ENV === "production",
         sameSite: "none",
         path: "/",
