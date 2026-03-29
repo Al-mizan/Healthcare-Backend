@@ -270,6 +270,29 @@ const logoutUser = async (sessionToken: string) => {
 
 const verifyEmail = async (email : string, otp : string) => {
 
+    // google login user should not be able to use verify email feature
+    const isUserExist = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+        include: {
+            accounts: {
+                select: {
+                    providerId: true,
+                }
+            }
+        }
+    })
+    if(!isUserExist){
+        throw new AppError(status.NOT_FOUND, "User not found");
+    }
+    if(isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED){
+        throw new AppError(status.NOT_FOUND, "User not found");
+    }
+    if(isUserExist.accounts.some(account => account.providerId === "google")){
+        throw new AppError(status.BAD_REQUEST, "Google login user cannot use verify email feature");
+    }
+
     const result = await auth.api.verifyEmailOTP({
         body:{
             email,
@@ -293,6 +316,13 @@ const forgetPassword = async (email : string) => {
     const isUserExist = await prisma.user.findUnique({
         where : {
             email,
+        },
+        include: {
+            accounts: {
+                select: {
+                    providerId: true,
+                }
+            }
         }
     })
 
@@ -309,9 +339,9 @@ const forgetPassword = async (email : string) => {
     }
 
     // google login user should not be able to use forget password feature
-    // if(isUserExist.provider === "google"){
-    //     throw new AppError(status.BAD_REQUEST, "Google login user cannot use forget password feature");
-    // }
+    if(isUserExist.accounts.some(account => account.providerId === "google")){
+        throw new AppError(status.BAD_REQUEST, "Google login user cannot use forget password feature");
+    }
 
     await auth.api.requestPasswordResetEmailOTP({
         body:{
@@ -324,6 +354,13 @@ const resetPassword = async (email : string, otp : string, newPassword : string)
     const isUserExist = await prisma.user.findUnique({
         where: {
             email,
+        },
+        include: {
+            accounts: {
+                select: {
+                    providerId: true,
+                }
+            }
         }
     })
 
@@ -337,6 +374,11 @@ const resetPassword = async (email : string, otp : string, newPassword : string)
 
     if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
         throw new AppError(status.NOT_FOUND, "User not found");
+    }
+
+    // google login user should not be able to use forget password feature
+    if(isUserExist.accounts.some(account => account.providerId === "google")){
+        throw new AppError(status.BAD_REQUEST, "Google login user cannot use forget password feature");
     }
 
     await auth.api.resetPasswordEmailOTP({
