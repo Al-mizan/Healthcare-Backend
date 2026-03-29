@@ -170,9 +170,13 @@
                 })
             });
 
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
             const data = await response.json();
 
-            if (data.url) {
+            if (data.url && data.url.startsWith("https://accounts.google.com")) {
                 window.location.href = data.url;
                 return;
             }

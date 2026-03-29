@@ -23,6 +23,8 @@ export const auth = betterAuth({
         google: {
             clientId: envVars.GOOGLE_CLIENT_ID,
             clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+            accessType: "offline", 
+            prompt: "select_account", 
             // callbackUrl: envVars.GOOGLE_CALLBACK_URL, eta dibo na ekhane 
             mapProfileToUser: () => {
                 return {
