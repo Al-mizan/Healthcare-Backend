@@ -1,5 +1,6 @@
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { prisma } from "./app/lib/prisma";
 
 
 const bootstrap = async () => {
@@ -9,6 +10,8 @@ const bootstrap = async () => {
         });
     } catch (error) {
         console.error("Error starting the server:", error);
+        await prisma.$disconnect();
+        process.exit(1);
     }
 };
 
