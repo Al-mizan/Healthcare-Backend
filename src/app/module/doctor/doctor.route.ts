@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
 import { checkAuth } from "../../middleware/checkAuth";
 import { DoctorController } from "./doctor.controller";
-import { validateRequestBody } from "../../middleware/validateRequist";
+import { validateRequest } from "../../middleware/validateRequist";
 import { updateDoctorZodSchema } from "./doctor.validation";
 
 const router = Router();
@@ -17,7 +17,7 @@ router.get("/:id",
 
 router.patch("/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    validateRequestBody(updateDoctorZodSchema), DoctorController.updateDoctor);
+    validateRequest(updateDoctorZodSchema), DoctorController.updateDoctor);
 
 router.delete("/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

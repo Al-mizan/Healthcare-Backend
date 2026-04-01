@@ -1,38 +1,38 @@
 import { Specialty } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
-const createSpeciality = async (payload: Specialty): Promise<Specialty> => {
+const createSpecialty = async (payload: Specialty): Promise<Specialty> => {
     
-    const speciality = await prisma.specialty.create({
+    const specialty = await prisma.specialty.create({
         data: payload,
     });
 
-    return speciality;
+    return specialty;
 }
 
-const getAllSpecialities = async (): Promise<Specialty[]> => {
-    const specialities = await prisma.specialty.findMany();
-    return specialities;
+const getAllSpecialties = async (): Promise<Specialty[]> => {
+    const specialties = await prisma.specialty.findMany();
+    return specialties;
 }
 
-const deleteSpeciality = async (id: string): Promise<Specialty> => {
-    const speciality = await prisma.specialty.delete({
+const deleteSpecialty = async (id: string): Promise<Specialty> => {
+    const specialty = await prisma.specialty.delete({
         where: { id },
     });
-    return speciality;
+    return specialty;
 }
 
-const updateSpeciality = async (id: string, payload: Partial<Specialty>): Promise<Specialty> => {
-    const speciality = await prisma.specialty.update({
+const updateSpecialty = async (id: string, payload: Partial<Specialty>): Promise<Specialty> => {
+    const specialty = await prisma.specialty.update({
         where: { id },
         data: payload,
     });
-    return speciality;
+    return specialty;
 }
 
-export const SpecialityService = {
-    createSpeciality,
-    getAllSpecialities,
-    deleteSpeciality,
-    updateSpeciality,
+export const SpecialtyService = {
+    createSpecialty,
+    getAllSpecialties,
+    deleteSpecialty,
+    updateSpecialty,
 }
