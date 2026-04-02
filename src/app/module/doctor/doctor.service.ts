@@ -3,22 +3,44 @@ import { UserStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 import { IUpdateDoctorPayload } from "./doctor.interface";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { IqueryParams } from "../../interface/query.interface";
+import { doctorFilterableFields, doctorIncludeConfig, doctorSearchableFields } from "./doctor.constant";
+import { Doctor, Prisma } from "../../../generated/prisma/client";
 
-const getAllDoctors = async () => {
-    const doctors = await prisma.doctor.findMany({
-        where: {
+
+const getAllDoctors = async (query: IqueryParams) => {
+
+    const queryBuilder = new QueryBuilder<Doctor, Prisma.DoctorWhereInput, Prisma.DoctorInclude>(
+        prisma.doctor,
+        query,
+        {
+            searchableFields: doctorSearchableFields,
+            filterableFields: doctorFilterableFields,
+        }
+    );
+    const result = await queryBuilder
+        .search()
+        .filter()
+        .where({
             isDeleted: false,
-        },
-        include: {
+        })
+        .include({
             user: true,
+            // specialties: true,
             specialties: {
                 include: {
                     specialty: true
                 }
-            }
-        }
-    })
-    return doctors;
+            },
+        })
+        .dynamicInclude(doctorIncludeConfig)
+        .paginate()
+        .sort()
+        .fields()
+        .execute();
+
+    return result;
 }
 
 const getDoctorById = async (id: string) => {
@@ -34,19 +56,6 @@ const getDoctorById = async (id: string) => {
                     specialty: true
                 }
             },
-            // appointments: {
-            //     include: {
-            //         patient: true,
-            //         schedule: true,
-            //         prescription: true,
-            //     }
-            // },
-            // doctorSchedules: {
-            //     include: {
-            //         schedule: true,
-            //     }
-            // },
-            // reviews: true
         }
     })
     return doctor;
