@@ -18,4 +18,4 @@ router.get('/', SpecialtyController.getAllSpecialties);
 router.delete('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), SpecialtyController.deleteSpecialty);
 router.patch('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), SpecialtyController.updateSpecialty);
 
-export const SpecialityRoutes: Router = router;
+export const SpecialtyRoutes: Router = router;
