@@ -19,28 +19,24 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
 
     switch(event.type){
         case "checkout.session.completed" : {
-            const session = event.data.object 
+            const session = event.data.object
 
             const appointmentId = session.metadata?.appointmentId
-
             const paymentId = session.metadata?.paymentId
 
             if(!appointmentId || !paymentId){
                 console.error("Missing appointmentId or paymentId in session metadata");
                 return {message : "Missing appointmentId or paymentId in session metadata"}
             }
-
             const appointment = await prisma.appointment.findUnique({
                 where : {
                     id : appointmentId
                 }
             })
-
             if(!appointment){
                 console.error(`Appointment with id ${appointmentId} not found`);
                 return {message : `Appointment with id ${appointmentId} not found`}
             }
-
             await prisma.$transaction(async (tx) => {
                 await tx.appointment.update({
                     where : {
@@ -50,7 +46,6 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
                         paymentStatus : session.payment_status === "paid" ? PaymentStatus.PAID : PaymentStatus.UNPAID
                     }
                 });
-
                 await tx.payment.update({
                     where : {
                         id : paymentId
@@ -62,20 +57,16 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
                     }
                 });
             });
-
             console.log(`Processed checkout.session.completed for appointment ${appointmentId} and payment ${paymentId}`);
             break;
         }
         case "checkout.session.expired" : {
                 const session = event.data.object
-
                 console.log(`Checkout session ${session.id} expired. Marking associated payment as failed.`);
                 break;
-
         }
         case "payment_intent.payment_failed" : {
             const session = event.data.object
-
             console.log(`Payment intent ${session.id} failed. Marking associated payment as failed.`);
             break;
         }

@@ -65,11 +65,12 @@ const bookAppointment = async (payload: IBookAppointmentPayload, user: IRequestU
         });
 
         //TODO : Payment Integration will be here
+        // * done this todo
 
         const transactionId = String(uuidv7());
 
         const paymentData = await tx.payment.create({
-            data: { 
+            data: {
                 appointmentId: appointmentData.id,
                 amount: doctorData.appointmentFee,
                 transactionId
@@ -130,7 +131,7 @@ const getMyAppointments = async (user: IRequestUser) => {
         }
     });
 
-    let appointments = [];
+    let appointments;
 
     if (patientData) {
         appointments = await prisma.appointment.findMany({
@@ -196,7 +197,7 @@ const changeAppointmentStatus = async (appointmentId: string, appointmentStatus:
 
 }
 
-// refactoring on include of doctor and patient data in appointment details, we can use query builder to get the data in single query instead of multiple queries in case of doctor and patient both
+// Todo: refactoring on include of doctor and patient data in appointment details, we can use query builder to get the data in single query instead of multiple queries in case of doctor and patient both
 const getMySingleAppointment = async (appointmentId: string, user: IRequestUser) => {
 
     const patientData = await prisma.patient.findUnique({
@@ -244,7 +245,7 @@ const getMySingleAppointment = async (appointmentId: string, user: IRequestUser)
     return appointment;
 }
 
-// integrate query builder
+// Todo: integrate query builder
 const getAllAppointments = async () => {
     const appointments = await prisma.appointment.findMany({
         include: {
