@@ -23,8 +23,8 @@ export const auth = betterAuth({
         google: {
             clientId: envVars.GOOGLE_CLIENT_ID,
             clientSecret: envVars.GOOGLE_CLIENT_SECRET,
-            accessType: "offline", 
-            prompt: "select_account", 
+            accessType: "offline",
+            prompt: "select_account",
             // callbackUrl: envVars.GOOGLE_CALLBACK_URL, eta dibo na ekhane 
             mapProfileToUser: () => {
                 return {
@@ -90,6 +90,16 @@ export const auth = betterAuth({
                             email,
                         }
                     })
+
+                    if (!user) {
+                        console.error(`User with email ${email} not found. Cannot send verification OTP.`);
+                        return;
+                    }
+
+                    if (user && user.role === Role.SUPER_ADMIN) {
+                        console.log(`User with email ${email} is a super admin. Skipping sending verification OTP.`);
+                        return;
+                    }
 
                     if (user && !user.emailVerified) {
                         sendEmail({

@@ -69,6 +69,7 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
             const session = event.data.object
             console.log(`Payment intent ${session.id} failed. Marking associated payment as failed.`);
             break;
+            
         }
         default :
             console.log(`Unhandled event type ${event.type}`);
