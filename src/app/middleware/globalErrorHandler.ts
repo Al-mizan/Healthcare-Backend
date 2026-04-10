@@ -8,6 +8,7 @@ import { TErrorResponse, TErrorSources } from "../interface/error.interface";
 import { handleZodError } from "../errorHelpers/handleZodError";
 import AppError from "../errorHelpers/AppError";
 import { deleteFileFromCloudinary } from "../config/cloudinary.config";
+import { deleteUploadedFilesFromGlobalErrorHandler } from "../utils/deleteUploadedFilesFromGlobalErrorHandler";
 
 
 export const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -15,13 +16,14 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
         console.error('Error from Global Error Handler:', err);
     }
 
-    if(req.file) {
-        await deleteFileFromCloudinary(req.file.path);
-    }
-    if(req.files && Array.isArray(req.files) && req.files.length > 0) {
-        const imageUrls = req.files.map((file) => (file.path));
-        await Promise.all(imageUrls.map(url => (deleteFileFromCloudinary(url))));
-    }
+    // if(req.file) {
+    //     await deleteFileFromCloudinary(req.file.path);
+    // }
+    // if(req.files && Array.isArray(req.files) && req.files.length > 0) {
+    //     const imageUrls = req.files.map((file) => (file.path));
+    //     await Promise.all(imageUrls.map(url => (deleteFileFromCloudinary(url))));
+    // }
+    await deleteUploadedFilesFromGlobalErrorHandler(req);
 
     let errorSources: TErrorSources[] = [];
     let statusCode: number = status.INTERNAL_SERVER_ERROR;
@@ -30,7 +32,7 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
 
     if (err instanceof z.ZodError) {
         const simplifiedZodError = handleZodError(err);
-        statusCode = simplifiedZodError.statusCode as number; 
+        statusCode = simplifiedZodError.statusCode as number;
         message = simplifiedZodError.message;
         errorSources = [...simplifiedZodError.errorSources];
         stack = err.stack;
@@ -46,7 +48,7 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
             }
         ];
     }
-    else if(err instanceof Error) {
+    else if (err instanceof Error) {
         statusCode = status.INTERNAL_SERVER_ERROR;
         message = err.message;
         stack = err.stack;
@@ -54,7 +56,7 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
             {
                 path: '',
                 message: err.message,
-            } 
+            }
         ];
     }
 

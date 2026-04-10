@@ -3,7 +3,7 @@ import { createDoctorZodSchema } from "./user.validation";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { UserController } from "./user.controller";
-import { validateRequest } from "../../middleware/validateRequist";
+import { validateRequest } from "../../middleware/validateRequest";
 
 
 const router = Router();

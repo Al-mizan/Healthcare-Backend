@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
 import { checkAuth } from "../../middleware/checkAuth";
 import { DoctorController } from "./doctor.controller";
-import { validateRequest } from "../../middleware/validateRequist";
+import { validateRequest } from "../../middleware/validateRequest";
 import { updateDoctorZodSchema } from "./doctor.validation";
 
 const router = Router();

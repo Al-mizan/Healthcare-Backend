@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
 import { checkAuth } from "../../middleware/checkAuth";
-import { validateRequest } from "../../middleware/validateRequist";
+import { validateRequest } from "../../middleware/validateRequest";
 import { ScheduleController } from "./schedule.controller";
 import { ScheduleValidation } from "./schedule.validation";
 
