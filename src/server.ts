@@ -2,18 +2,27 @@ import { Server } from "http";
 import app from "./app";
 import { envVars } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils/seed";
+import { prisma } from "./app/lib/prisma";
+import { redisService } from "./app/lib/redis";
 
 let server: Server;
 const bootstrap = async () => {
     try {
+        // Create the vector extension if it doesn't exist in the database before running the migration
+        await prisma.$executeRaw`CREATE EXTENSION IF NOT EXISTS "vector" WITH SCHEMA public;`;
         await seedSuperAdmin();
+        await redisService.connect().catch((error) => {
+            console.error("Failed to connect to Redis:", error);
+        });
         server = app.listen(envVars.PORT, () => {
-            console.log(`Server is running on http://localhost:${envVars.PORT}`);
+            console.log(
+                `Server is running on http://localhost:${envVars.PORT}`,
+            );
         });
     } catch (error) {
-        console.error('Failed to start server:', error);
+        console.error("Failed to start server:", error);
     }
-}
+};
 
 // SIGTERM signal handler
 process.on("SIGTERM", () => {
@@ -25,8 +34,7 @@ process.on("SIGTERM", () => {
         });
     }
     process.exit(1);
-
-})
+});
 
 // SIGINT signal handler
 process.on("SIGINT", () => {
@@ -41,15 +49,15 @@ process.on("SIGINT", () => {
 });
 
 //uncaught exception handler for synchronous code
-process.on('uncaughtException', (error) => {
+process.on("uncaughtException", (error) => {
     console.log("Uncaught Exception Detected... Shutting down server", error);
     if (server) {
         server.close(() => {
             process.exit(1);
-        })
+        });
     }
     process.exit(1);
-})
+});
 
 // unhandled rejection handler for asynchronous code
 process.on("unhandledRejection", (error) => {
@@ -57,9 +65,9 @@ process.on("unhandledRejection", (error) => {
     if (server) {
         server.close(() => {
             process.exit(1);
-        })
+        });
     }
     process.exit(1);
-})
+});
 
 bootstrap();

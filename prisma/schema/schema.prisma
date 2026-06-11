@@ -7,8 +7,11 @@
 generator client {
   provider = "prisma-client"
   output   = "../../src/generated/prisma" 
+  previewFeatures = ["postgresqlExtensions"]
 }
+// create extension if not exists "vector" with schema public; in the database before running the migration
 
 datasource db {
   provider = "postgresql"
+  extensions = [vector]
 }
